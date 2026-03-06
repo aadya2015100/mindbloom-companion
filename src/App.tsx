@@ -29,6 +29,7 @@ const App = () => (
             <Route path="/routine" element={<RoutineBuilder />} />
             <Route path="/breathe" element={<BreathingExercise />} />
             <Route path="/communicate" element={<CommunicationTemplates />} />
+            <Route path="/progress" element={<ParentDashboard />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
