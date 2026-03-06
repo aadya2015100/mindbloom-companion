@@ -10,6 +10,7 @@ import TaskBreakdown from "./pages/TaskBreakdown";
 import RoutineBuilder from "./pages/RoutineBuilder";
 import BreathingExercise from "./pages/BreathingExercise";
 import CommunicationTemplates from "./pages/CommunicationTemplates";
+import ParentDashboard from "./pages/ParentDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/routine" element={<RoutineBuilder />} />
             <Route path="/breathe" element={<BreathingExercise />} />
             <Route path="/communicate" element={<CommunicationTemplates />} />
+            <Route path="/progress" element={<ParentDashboard />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
