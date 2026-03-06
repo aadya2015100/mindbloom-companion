@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { StatsProvider } from "./contexts/StatsContext";
 import AppLayout from "./components/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import FocusMode from "./pages/FocusMode";
@@ -17,24 +18,26 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route element={<AppLayout />}>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/focus" element={<FocusMode />} />
-            <Route path="/tasks" element={<TaskBreakdown />} />
-            <Route path="/routine" element={<RoutineBuilder />} />
-            <Route path="/breathe" element={<BreathingExercise />} />
-            <Route path="/communicate" element={<CommunicationTemplates />} />
-            <Route path="/progress" element={<ParentDashboard />} />
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <StatsProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route element={<AppLayout />}>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/focus" element={<FocusMode />} />
+              <Route path="/tasks" element={<TaskBreakdown />} />
+              <Route path="/routine" element={<RoutineBuilder />} />
+              <Route path="/breathe" element={<BreathingExercise />} />
+              <Route path="/communicate" element={<CommunicationTemplates />} />
+              <Route path="/progress" element={<ParentDashboard />} />
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </StatsProvider>
   </QueryClientProvider>
 );
 

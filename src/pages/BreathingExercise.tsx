@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Play, Pause, Wind } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useStats } from "@/contexts/StatsContext";
 
 const TECHNIQUES = [
   { name: "Box Breathing", phases: [4, 4, 4, 4], labels: ["Breathe in", "Hold", "Breathe out", "Hold"] },
@@ -14,7 +15,9 @@ const BreathingExercise = () => {
   const [isActive, setIsActive] = useState(false);
   const [phaseIdx, setPhaseIdx] = useState(0);
   const [counter, setCounter] = useState(0);
+  const [cycleCount, setCycleCount] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const { logCalmSession } = useStats();
 
   const tech = TECHNIQUES[techIdx];
   const activePhases = tech.phases.map((p, i) => ({ duration: p, label: tech.labels[i] })).filter((p) => p.duration > 0);
@@ -25,6 +28,7 @@ const BreathingExercise = () => {
       return;
     }
     setPhaseIdx(0);
+    setCycleCount(0);
     setCounter(activePhases[0].duration);
 
     intervalRef.current = setInterval(() => {
@@ -32,6 +36,14 @@ const BreathingExercise = () => {
         if (prev <= 1) {
           setPhaseIdx((pi) => {
             const next = (pi + 1) % activePhases.length;
+            if (next === 0) {
+              setCycleCount((c) => {
+                const newCount = c + 1;
+                // Log a calm session every 3 full cycles
+                if (newCount % 3 === 0) logCalmSession();
+                return newCount;
+              });
+            }
             setCounter(activePhases[next].duration);
             return next;
           });
@@ -45,6 +57,14 @@ const BreathingExercise = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isActive, techIdx]);
 
+  // Log when user stops after at least 1 cycle
+  const handleToggle = () => {
+    if (isActive && cycleCount > 0) {
+      logCalmSession();
+    }
+    setIsActive(!isActive);
+  };
+
   const currentPhase = activePhases[phaseIdx];
   const isExpand = currentPhase?.label.includes("in");
 
@@ -55,83 +75,32 @@ const BreathingExercise = () => {
         <p className="text-muted-foreground mt-1">Guided breathing to help you reset and regulate.</p>
       </motion.div>
 
-      {/* Technique selector */}
       <div className="flex gap-2 flex-wrap">
         {TECHNIQUES.map((t, i) => (
-          <button
-            key={t.name}
-            onClick={() => { setTechIdx(i); setIsActive(false); }}
-            className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-              i === techIdx ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"
-            }`}
-          >
-            {t.name}
-          </button>
+          <button key={t.name} onClick={() => { setTechIdx(i); setIsActive(false); }} className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${i === techIdx ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}>{t.name}</button>
         ))}
       </div>
 
-      {/* Breathing circle */}
       <div className="ns-gradient-sky rounded-3xl p-10 flex flex-col items-center gap-6">
-        <motion.div
-          animate={{
-            scale: isActive ? (isExpand ? 1.4 : 1) : 1.1,
-          }}
-          transition={{
-            duration: isActive ? currentPhase?.duration || 4 : 2,
-            ease: "easeInOut",
-            repeat: isActive ? 0 : Infinity,
-            repeatType: "reverse",
-          }}
-          className="w-40 h-40 rounded-full bg-sky-deep/20 border-4 border-sky-deep/40 flex items-center justify-center"
-        >
-          <motion.div
-            animate={{
-              scale: isActive ? (isExpand ? 1.3 : 0.9) : 1,
-            }}
-            transition={{
-              duration: isActive ? currentPhase?.duration || 4 : 2,
-              ease: "easeInOut",
-              repeat: isActive ? 0 : Infinity,
-              repeatType: "reverse",
-            }}
-            className="w-24 h-24 rounded-full bg-sky-deep/30 flex items-center justify-center"
-          >
-            {isActive ? (
-              <span className="text-3xl font-bold font-display text-foreground">{counter}</span>
-            ) : (
-              <Wind className="w-8 h-8 text-sky-deep" />
-            )}
+        <motion.div animate={{ scale: isActive ? (isExpand ? 1.4 : 1) : 1.1 }} transition={{ duration: isActive ? currentPhase?.duration || 4 : 2, ease: "easeInOut", repeat: isActive ? 0 : Infinity, repeatType: "reverse" }} className="w-40 h-40 rounded-full bg-sky-deep/20 border-4 border-sky-deep/40 flex items-center justify-center">
+          <motion.div animate={{ scale: isActive ? (isExpand ? 1.3 : 0.9) : 1 }} transition={{ duration: isActive ? currentPhase?.duration || 4 : 2, ease: "easeInOut", repeat: isActive ? 0 : Infinity, repeatType: "reverse" }} className="w-24 h-24 rounded-full bg-sky-deep/30 flex items-center justify-center">
+            {isActive ? <span className="text-3xl font-bold font-display text-foreground">{counter}</span> : <Wind className="w-8 h-8 text-sky-deep" />}
           </motion.div>
         </motion.div>
 
         {isActive && (
-          <motion.p
-            key={currentPhase?.label}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-lg font-semibold font-display text-foreground/80"
-          >
-            {currentPhase?.label}
-          </motion.p>
+          <motion.p key={currentPhase?.label} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-lg font-semibold font-display text-foreground/80">{currentPhase?.label}</motion.p>
         )}
 
-        <Button
-          onClick={() => setIsActive(!isActive)}
-          size="lg"
-          className="rounded-full px-8"
-        >
+        <Button onClick={handleToggle} size="lg" className="rounded-full px-8">
           {isActive ? <Pause className="w-5 h-5 mr-2" /> : <Play className="w-5 h-5 mr-2" />}
           {isActive ? "Pause" : "Begin"}
         </Button>
       </div>
 
-      {/* Info */}
       <div className="glass-card rounded-2xl p-5">
         <h4 className="font-semibold font-display text-foreground mb-2">Why breathing helps</h4>
-        <p className="text-sm text-muted-foreground">
-          Controlled breathing activates your parasympathetic nervous system, reducing anxiety and improving focus.
-          Even 2 minutes can help reset your emotional state during overwhelming moments.
-        </p>
+        <p className="text-sm text-muted-foreground">Controlled breathing activates your parasympathetic nervous system, reducing anxiety and improving focus. Even 2 minutes can help reset your emotional state during overwhelming moments.</p>
       </div>
     </div>
   );
