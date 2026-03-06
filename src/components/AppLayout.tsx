@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { Brain, Focus, ListChecks, CalendarClock, Wind, MessageSquare, LayoutDashboard } from "lucide-react";
+import { Brain, Focus, ListChecks, CalendarClock, Wind, MessageSquare, LayoutDashboard, BarChart3 } from "lucide-react";
 
 const navItems = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard" },
@@ -8,6 +8,7 @@ const navItems = [
   { to: "/routine", icon: CalendarClock, label: "Routine" },
   { to: "/breathe", icon: Wind, label: "Calm Zone" },
   { to: "/communicate", icon: MessageSquare, label: "Communicate" },
+  { to: "/progress", icon: BarChart3, label: "Progress" },
 ];
 
 const AppLayout = () => {

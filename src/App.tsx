@@ -10,6 +10,7 @@ import TaskBreakdown from "./pages/TaskBreakdown";
 import RoutineBuilder from "./pages/RoutineBuilder";
 import BreathingExercise from "./pages/BreathingExercise";
 import CommunicationTemplates from "./pages/CommunicationTemplates";
+import ParentDashboard from "./pages/ParentDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
