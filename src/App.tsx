@@ -18,24 +18,26 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route element={<AppLayout />}>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/focus" element={<FocusMode />} />
-            <Route path="/tasks" element={<TaskBreakdown />} />
-            <Route path="/routine" element={<RoutineBuilder />} />
-            <Route path="/breathe" element={<BreathingExercise />} />
-            <Route path="/communicate" element={<CommunicationTemplates />} />
-            <Route path="/progress" element={<ParentDashboard />} />
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <StatsProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route element={<AppLayout />}>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/focus" element={<FocusMode />} />
+              <Route path="/tasks" element={<TaskBreakdown />} />
+              <Route path="/routine" element={<RoutineBuilder />} />
+              <Route path="/breathe" element={<BreathingExercise />} />
+              <Route path="/communicate" element={<CommunicationTemplates />} />
+              <Route path="/progress" element={<ParentDashboard />} />
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </StatsProvider>
   </QueryClientProvider>
 );
 
